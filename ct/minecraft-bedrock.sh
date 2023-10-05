@@ -14,7 +14,7 @@ EOF
 }
 header_info
 echo -e "Loading..."
-APP="Alpine-Docker"
+APP="minecraft-bedrock"
 var_disk="8"
 var_cpu="2"
 var_ram="2048"
