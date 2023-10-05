@@ -32,6 +32,7 @@ echo -e '{\n  "storage-driver": "fuse-overlayfs",\n  "log-driver": "journald"\n}
 else
 echo -e '{\n  "log-driver": "journald"\n}' > /etc/docker/daemon.json
 fi
+## TODO: Make this run supervised
 $STD docker run -d -it -e EULA=TRUE -p 19132:19132/udp -v mc-bedrock-data:/data itzg/minecraft-bedrock-server
 msg_ok "Installed Minecraft Bedrock"
 
