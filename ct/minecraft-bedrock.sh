@@ -6,19 +6,20 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
 # https://github.com/tteck/Proxmox/raw/main/LICENSE
 
 function header_info {
-clear
-cat <<"EOF"
-    MINECRAFT BEDROCK
+  clear
+  cat <<"EOF"
+    Minecraft Bedrock
+ 
 EOF
 }
 header_info
 echo -e "Loading..."
-APP="Minecraft Bedrock"
-var_disk="1"
+APP="Alpine-Docker"
+var_disk="8"
 var_cpu="2"
 var_ram="2048"
-var_os="debian"
-var_version="12"
+var_os="alpine"
+var_version="3.18"
 variables
 color
 catch_errors
@@ -46,12 +47,27 @@ function default_settings() {
 }
 
 function update_script() {
-header_info
-msg_info "Updating ${APP} LXC"
-apt-get update &>/dev/null
-apt-get -y upgrade &>/dev/null
-msg_ok "Updated Successfully"
-exit
+  if ! apk -e info newt >/dev/null 2>&1; then
+    apk add -q newt
+  fi
+  while true; do
+    CHOICE=$(
+      whiptail --backtitle "Proxmox VE Helper Scripts" --title "SUPPORT" --menu "Select option" 11 58 1 \
+        "1" "Check for Docker Updates" 3>&2 2>&1 1>&3
+    )
+    exit_status=$?
+    if [ $exit_status == 1 ]; then
+      clear
+      exit-script
+    fi
+    header_info
+    case $CHOICE in
+    1)
+      apk update && apk upgrade
+      exit
+      ;;
+    esac
+  done
 }
 
 start
