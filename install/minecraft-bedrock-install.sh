@@ -43,7 +43,7 @@ cat >/root/config.yml <<EOF
 containers:
   bedrock:
     # Backup the world "PrivateSMP" on the "bedrock_server" docker container
-    - name: bedrock_server
+    - name: minecraft_bedrock_server
       worlds:
         - /server/worlds/MyWorld
 schedule:
@@ -59,6 +59,8 @@ trim:
   minKeep: 2
 EOF
 
+mkdir /opt/bedrock/backups
+
 cat >/root/minecraft-bedrock.yaml <<EOF
 version: '3.8'
 
@@ -66,16 +68,19 @@ services:
   backup:
     image: kaiede/minecraft-bedrock-backup
     restart: always
+    container_name: minecraft_backup
     depends_on:
       - "bedrock-server"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/bedrock/backups:/backups
       - /opt/bedrock/server:/server
-      - ${PWD}/config.yml:/backups/config.yml
+      - /root/config.yml:/backups/config.yml
+    tty: true
 
   bedrock-server:
     image: itzg/minecraft-bedrock-server
+    container_name: minecraft_bedrock_server
     environment:
       EULA: "TRUE"
       GAMEMODE: survival
