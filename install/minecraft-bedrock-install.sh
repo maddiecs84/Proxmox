@@ -27,14 +27,72 @@ $STD rc-service docker start
 $STD rc-update add docker default
 msg_ok "Installed Docker"
 
-msg_info "Starting Minecraft Bedrock"
-while (! docker stats --no-stream ); do
-  # Docker takes a few seconds to initialize
-  echo "Waiting for Docker to launch..."
-  sleep 1
-done
-$STD docker run -d -it -e EULA=TRUE -p 19132:19132/udp -v mc-bedrock-data:/data itzg/minecraft-bedrock-server
-msg_ok "Started Minecraft Bedrock"
+get_latest_release() {
+  curl -sL https://api.github.com/repos/$1/releases/latest | grep '"tag_name":' | cut -d'"' -f4
+}
+DOCKER_COMPOSE_LATEST_VERSION=$(get_latest_release "docker/compose")
+
+msg_info "Installing Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+mkdir -p $DOCKER_CONFIG/cli-plugins
+curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_LATEST_VERSION/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+msg_ok "Installed Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
+
+cat >/root/config.yml <<EOF
+containers:
+  bedrock:
+    # Backup the world "PrivateSMP" on the "bedrock_server" docker container
+    - name: bedrock_server
+      worlds:
+        - /bedrock_server/worlds/My World
+schedule:
+  # This will perform a backup every 3 hours.
+  # At most this will generate 8 backups a day.
+  interval: 3h
+trim:
+  # Keep all backups for the last two days (today and yesterday)
+  # Keep at least one backup for the last 14 days
+  # Keep at least two backups per world
+  trimDays: 2
+  keepDays: 14
+  minKeep: 2
+EOF
+
+cat >/root/minecraft-bedrock.yaml <<EOF
+version: '3.8'
+
+services:
+  backup:
+    image: kaiede/minecraft-bedrock-backup
+    restart: always
+    depends_on:
+      - "bedrock-server"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/bedrock/backups:/backups
+      - bedrock-server:/bedrock
+      - /root/config.yaml:/backups/config.yml
+
+  bedrock-server:
+    image: itzg/minecraft-bedrock-server
+    environment:
+      EULA: "TRUE"
+      GAMEMODE: survival
+      DIFFICULTY: normal
+      LEVEL_NAME: "My World"
+    ports:
+      - 19132:19132/udp
+    volumes:
+      - bedrock-server:/data
+    stdin_open: true
+    tty: true
+
+volumes:
+  bedrock-server:
+EOF
+
+docker-compose -f /root/minecraft-bedrock.yaml -d up
 
 motd_ssh
 customize
