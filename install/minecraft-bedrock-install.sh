@@ -42,7 +42,7 @@ msg_ok "Installed Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
 cat >/root/config.yml <<EOF
 containers:
   bedrock:
-    # Backup the world "PrivateSMP" on the "bedrock_server" docker container
+    # Name of the container
     - name: minecraft_bedrock_server
       worlds:
         - /server/worlds/MyWorld
