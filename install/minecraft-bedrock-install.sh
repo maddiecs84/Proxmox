@@ -45,7 +45,7 @@ containers:
     # Backup the world "PrivateSMP" on the "bedrock_server" docker container
     - name: bedrock_server
       worlds:
-        - /bedrock_server/worlds/My World
+        - /bedrock_server/worlds/MyWorld
 schedule:
   # This will perform a backup every 3 hours.
   # At most this will generate 8 backups a day.
@@ -72,7 +72,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/bedrock/backups:/backups
       - bedrock-server:/bedrock
-      - /root/config.yaml:/backups/config.yml
+      - /root/config.yml:/backups/config.yml
 
   bedrock-server:
     image: itzg/minecraft-bedrock-server
@@ -80,7 +80,7 @@ services:
       EULA: "TRUE"
       GAMEMODE: survival
       DIFFICULTY: normal
-      LEVEL_NAME: "My World"
+      LEVEL_NAME: "MyWorld"
     ports:
       - 19132:19132/udp
     volumes:
