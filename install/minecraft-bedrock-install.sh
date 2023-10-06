@@ -59,8 +59,6 @@ trim:
   minKeep: 2
 EOF
 
-mkdir /opt/bedrock/backups
-
 cat >/root/minecraft-bedrock.yaml <<EOF
 version: '3.8'
 
