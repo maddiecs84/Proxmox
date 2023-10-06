@@ -92,7 +92,7 @@ volumes:
   bedrock-server:
 EOF
 
-$DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml -d up
+$DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --detach
 
 motd_ssh
 customize
