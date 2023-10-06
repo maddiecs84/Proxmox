@@ -45,7 +45,7 @@ containers:
     # Backup the world "PrivateSMP" on the "bedrock_server" docker container
     - name: bedrock_server
       worlds:
-        - /bedrock_server/worlds/MyWorld
+        - /server/worlds/MyWorld
 schedule:
   # This will perform a backup every 3 hours.
   # At most this will generate 8 backups a day.
@@ -71,8 +71,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/bedrock/backups:/backups
-      - bedrock-server:/bedrock
-      - /root/config.yml:/backups/config.yml
+      - /opt/bedrock/server:/server
+      - ${PWD}/config.yml:/backups/config.yml
 
   bedrock-server:
     image: itzg/minecraft-bedrock-server
@@ -84,12 +84,10 @@ services:
     ports:
       - 19132:19132/udp
     volumes:
-      - bedrock-server:/data
+      - /opt/bedrock/server:/data
     stdin_open: true
     tty: true
-
-volumes:
-  bedrock-server:
+    restart: unless-stopped
 EOF
 
 $DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --detach
