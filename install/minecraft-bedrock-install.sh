@@ -80,7 +80,15 @@ else
     BACKUPS=0
 fi
 
-ALLOW_LIST=$(whiptail --inputbox "Enter allowed players (comma separated)?" 11 58 "" --title "Allowed players" 3>&1 1>&2 2>&3)
+# If you cannot understand this, read Bash_Shell_Scripting/Conditional_Expressions again.
+if whiptail --title "Allow list" --yesno "Set up an allow list?" 8 78; then
+    USE_ALLOW_LIST="true"
+    ALLOW_LIST=$(whiptail --inputbox "Enter allowed players (comma separated)?" 11 58 "" --title "Allowed players" 3>&1 1>&2 2>&3)
+else
+    USE_ALLOW_LIST="false"
+    ALLOW_LIST=""
+fi
+
 
 cat >/root/config.yml <<EOF
 containers:
@@ -114,7 +122,8 @@ services:
       GAMEMODE: $GAME_MODE
       DIFFICULTY: $DIFFICULTY
       LEVEL_NAME: "$WORLD_NAME"
-      WHITE_LIST: "$ALLOW_LIST"
+      ALLOW_LIST: "$USE_ALLOW_LIST"
+      ALLOW_LIST_USERS: "$ALLOW_LIST"
     ports:
       - $PORT:19132/udp
     volumes:
