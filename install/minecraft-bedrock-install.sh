@@ -41,7 +41,7 @@ msg_ok "Installed Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
 
 whiptail --title "Minecraft Bedrock" --msgbox "Configure your Minecraft Bedrock server" 11 58
 
-PORT=19132
+BEDROCK_SERVER_PORT=19132
 
 WORLD_NAME=$(whiptail --inputbox "What would you like to call your world?" 11 58 "My World" --title "World Name" 3>&1 1>&2 2>&3)
 exitstatus=$?
@@ -125,7 +125,7 @@ services:
       ALLOW_LIST: "$USE_ALLOW_LIST"
       ALLOW_LIST_USERS: "$ALLOW_LIST"
     ports:
-      - $PORT:19132/udp
+      - $BEDROCK_SERVER_PORT:19132/udp
     volumes:
       - /opt/bedrock/server:/data
     stdin_open: true
@@ -176,7 +176,7 @@ http {
 }
 EOF
 
-SERVER_ADDR="$(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT"
+SERVER_ADDR="$(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$BEDROCK_SERVER_PORT"
 cat >/root/dashboard.html <<EOF
 <!DOCTYPE html>
 <html>
@@ -205,9 +205,10 @@ cat >>/root/minecraft-bedrock.yaml <<EOF
 EOF
 ## End configuring dashboard
 
-$DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --detach
-
 motd_ssh
 customize
+
+$DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --detach
+
 msg_ok "Installed Minecraft Bedrock"
 msg_ok "Connect to $WORLD_NAME at $SERVER_ADDR"
