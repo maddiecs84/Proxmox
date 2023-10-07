@@ -6,9 +6,8 @@
 
 <h2>Maddies custom scripts</h2>
 <h3>Minecraft Bedrock Server</h3>
-<code class="language-bash">
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/maddiecs84/Proxmox/main/ct/minecraft-bedrock.sh)"
-</code>
+<pre>bash -c "$(wget -qLO - https://raw.githubusercontent.com/maddiecs84/Proxmox/main/ct/minecraft-bedrock.sh)"</pre>
+
 
 <sub><p align="center"><a href="https://github.com/tteck/Proxmox/blob/main/CODE-AUDIT.md">Exercise caution and conduct a comprehensive assessment of scripts and automation tasks acquired from external sources.</a></p></sub>
 <sub><div align="center"> Proxmox® is a registered trademark of Proxmox Server Solutions GmbH. </div></sub>
