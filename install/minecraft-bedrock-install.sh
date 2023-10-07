@@ -53,6 +53,17 @@ then
       WORLD_NAME="My World"
 fi
 
+DEFAULT_SEED="5890866665536842607" # Cherry Blossom
+LEVEL_SEED=$(whiptail --inputbox "Enter your level seed?" 11 58 "$DEFAULT_SEED" --title "Level Seed" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+if [ -z "$LEVEL_SEED" ]
+then
+      LEVEL_SEED=$DEFAULT_SEED
+fi
+
 GAME_MODE=$(whiptail --title "Game mode" --radiolist "Choose a game mode" 11 58 4 \
   "creative" "" ON \
   "survival" "" OFF \
@@ -124,6 +135,7 @@ services:
       LEVEL_NAME: "$WORLD_NAME"
       ALLOW_LIST: "$USE_ALLOW_LIST"
       ALLOW_LIST_USERS: "$ALLOW_LIST"
+      LEVEL_SEED: "$LEVEL_SEED"
     ports:
       - $BEDROCK_SERVER_PORT:19132/udp
     volumes:
