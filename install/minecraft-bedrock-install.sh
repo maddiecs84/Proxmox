@@ -39,13 +39,57 @@ curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_LA
 chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 msg_ok "Installed Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
 
+whiptail --title "Minecraft Bedrock" --msgbox "Configure your Minecraft Bedrock server" 11 58 4
+
+PORT=19132
+
+WORLD_NAME=$(whiptail --inputbox "What would you like to call your world?" 11 58 4 "My World" --title "World Name" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+if [ -z "$WORLD_NAME" ]
+then
+      WORLD_NAME="My World"
+fi
+
+GAME_MODE=$(whiptail --title "Game mode" --radiolist "Choose a game mode" 11 58 4 \
+  "creative" "" ON \
+  "survival" "" OFF \
+  "adventure" "" OFF \
+  3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+
+DIFFICULT=$(whiptail --title "Game mode" --radiolist "Choose a difficulty" 11 58 4 \
+  "peaceful" "" OFF \
+  "easy" "" ON \
+  "normal" "" OFF \
+  "hard" "" OFF \
+  3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+
+if whiptail --title "Backups" --yesno "Would you like to enable default backup settings?" 11 58 4; then
+    echo "User selected Yes, exit status was $?."
+    BACKUPS=1
+else
+    BACKUPS=0
+fi
+
+ALLOW_LIST=$(whiptail --inputbox "Enter allowed players (comma separated)?" 11 58 "" --title "Allowed players" 3>&1 1>&2 2>&3)
+
 cat >/root/config.yml <<EOF
 containers:
   bedrock:
     # Name of the container
     - name: minecraft_bedrock_server
       worlds:
-        - /server/worlds/MyWorld
+        - /server/worlds/$WORLD_NAME
 schedule:
   # This will perform a backup every 3 hours.
   # At most this will generate 8 backups a day.
@@ -63,6 +107,26 @@ cat >/root/minecraft-bedrock.yaml <<EOF
 version: '3.8'
 
 services:
+  bedrock-server:
+    image: itzg/minecraft-bedrock-server
+    container_name: minecraft_bedrock_server
+    environment:
+      EULA: "TRUE"
+      GAMEMODE: $GAME_MODE
+      DIFFICULTY: normal
+      LEVEL_NAME: "$WORLD_NAME"
+      WHITE_LIST: "$ALLOW_LIST"
+    ports:
+      - $PORT:19132/udp
+    volumes:
+      - /opt/bedrock/server:/data
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+EOF
+
+if [ $BACKUPS = 0 ]; then
+  cat >/root/minecraft-bedrock.yaml <<EOF
   backup:
     image: kaiede/minecraft-bedrock-backup
     restart: always
@@ -75,26 +139,12 @@ services:
       - /opt/bedrock/server:/server
       - /root/config.yml:/backups/config.yml
     tty: true
-
-  bedrock-server:
-    image: itzg/minecraft-bedrock-server
-    container_name: minecraft_bedrock_server
-    environment:
-      EULA: "TRUE"
-      GAMEMODE: survival
-      DIFFICULTY: normal
-      LEVEL_NAME: "MyWorld"
-    ports:
-      - 19132:19132/udp
-    volumes:
-      - /opt/bedrock/server:/data
-    stdin_open: true
-    tty: true
-    restart: unless-stopped
 EOF
+fi
 
 $DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --detach
 
 motd_ssh
 customize
 msg_ok "Installed Minecraft Bedrock"
+msg_ok "Connect to $(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT"
