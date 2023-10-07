@@ -493,7 +493,7 @@ build_container() {
   TEMP_DIR=$(mktemp -d)
   pushd $TEMP_DIR >/dev/null
   if [ "$var_os" == "alpine" ]; then
-    export FUNCTIONS_FILE_PATH="$(curl -s https://raw.githubusercontent.com/maddiecs84/Proxmox/main/alpine-install.func)"
+    export FUNCTIONS_FILE_PATH="$(curl -s https://raw.githubusercontent.com/maddiecs84/Proxmox/main/misc/alpine-install.func)"
   else
     export FUNCTIONS_FILE_PATH="$(curl -s https://raw.githubusercontent.com/maddiecs84/Proxmox/main/misc/install.func)"
   fi
@@ -566,7 +566,6 @@ EOF
     sleep 2
     pct exec "$CTID" -- ash -c "apk add bash >/dev/null"
   fi
-  msg_info "Installing $var_install"
   lxc-attach -n "$CTID" -- bash -c "$(wget -qLO - https://raw.githubusercontent.com/maddiecs84/Proxmox/main/install/$var_install.sh)" || exit
 
 }
