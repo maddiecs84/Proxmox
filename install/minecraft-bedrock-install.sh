@@ -150,6 +150,57 @@ if [ $BACKUPS = 1 ]; then
 EOF
 fi
 
+## Start configuring dashboard
+cat >/root/nginx.config <<EOF
+events {
+    worker_connections 1024;
+}
+
+http {
+    include mime.types;
+    sendfile on;
+
+    server {
+        listen 80;
+        listen [::]:80;
+
+        resolver 127.0.0.11;
+        autoindex off;
+
+        server_name _;
+        server_tokens off;
+
+        root /app/static;
+        gzip_static on;
+    }
+}
+EOF
+
+cat >/root/dashboard.html <<EOF
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>$WORLD_NAME</h1>
+  </body>
+</html>
+EOF
+
+cat >>/root/minecraft-bedrock.yaml <<EOF
+  backup:
+    image: nginx:alpine
+    restart: always
+    container_name: minecraft_dashboard
+    ports:
+      - "80:80"
+    environment:
+      - NGINX_PORT=80
+    volumes:
+      - /root/nginx.conf:/etc/nginx/nginx.conf
+      - /root/dashboard.html:/app/static/index.html
+    tty: true
+EOF
+## End configuring dashboard
+
 $DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --detach
 
 motd_ssh
