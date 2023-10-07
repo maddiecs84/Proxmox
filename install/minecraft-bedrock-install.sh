@@ -180,7 +180,10 @@ cat >/root/dashboard.html <<EOF
 <!DOCTYPE html>
 <html>
   <body>
-    <h1>$WORLD_NAME</h1>
+    <h1>Minecraft Bedrock - $WORLD_NAME</h1>
+    <p>
+      Connect to $WORLD_NAME at $(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT
+    </p>
   </body>
 </html>
 EOF
