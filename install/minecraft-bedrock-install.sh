@@ -112,7 +112,7 @@ services:
     environment:
       EULA: "TRUE"
       GAMEMODE: $GAME_MODE
-      DIFFICULTY: $DIFFICULTY"
+      DIFFICULTY: $DIFFICULTY
       LEVEL_NAME: "$WORLD_NAME"
       WHITE_LIST: "$ALLOW_LIST"
     ports:
