@@ -125,7 +125,7 @@ services:
 EOF
 
 if [ $BACKUPS = 1 ]; then
-  cat >/root/minecraft-bedrock.yaml <<EOF
+  cat >>/root/minecraft-bedrock.yaml <<EOF
   backup:
     image: kaiede/minecraft-bedrock-backup
     restart: always
