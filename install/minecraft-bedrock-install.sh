@@ -186,7 +186,7 @@ cat >/root/dashboard.html <<EOF
 EOF
 
 cat >>/root/minecraft-bedrock.yaml <<EOF
-  backup:
+  dashboard:
     image: nginx:alpine
     restart: always
     container_name: minecraft_dashboard
