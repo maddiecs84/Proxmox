@@ -39,11 +39,11 @@ curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_LA
 chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 msg_ok "Installed Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
 
-whiptail --title "Minecraft Bedrock" --msgbox "Configure your Minecraft Bedrock server" 11 58 4
+whiptail --title "Minecraft Bedrock" --msgbox "Configure your Minecraft Bedrock server" 11 58
 
 PORT=19132
 
-WORLD_NAME=$(whiptail --inputbox "What would you like to call your world?" 11 58 4 "My World" --title "World Name" 3>&1 1>&2 2>&3)
+WORLD_NAME=$(whiptail --inputbox "What would you like to call your world?" 11 58 "My World" --title "World Name" 3>&1 1>&2 2>&3)
 exitstatus=$?
 if [ $exitstatus != 0 ]; then
     exit 1
@@ -53,7 +53,7 @@ then
       WORLD_NAME="My World"
 fi
 
-GAME_MODE=$(whiptail --title "Game mode" --radiolist "Choose a game mode" 11 58 4 \
+GAME_MODE=$(whiptail --title "Game mode" --radiolist "Choose a game mode" 11 58 \
   "creative" "" ON \
   "survival" "" OFF \
   "adventure" "" OFF \
@@ -63,7 +63,7 @@ if [ $exitstatus != 0 ]; then
     exit 1
 fi
 
-DIFFICULT=$(whiptail --title "Game mode" --radiolist "Choose a difficulty" 11 58 4 \
+DIFFICULT=$(whiptail --title "Game mode" --radiolist "Choose a difficulty" 11 58 \
   "peaceful" "" OFF \
   "easy" "" ON \
   "normal" "" OFF \
@@ -74,8 +74,7 @@ if [ $exitstatus != 0 ]; then
     exit 1
 fi
 
-if whiptail --title "Backups" --yesno "Would you like to enable default backup settings?" 11 58 4; then
-    echo "User selected Yes, exit status was $?."
+if whiptail --title "Backups" --yesno "Would you like to enable default backup settings?" 11 58; then
     BACKUPS=1
 else
     BACKUPS=0
@@ -113,7 +112,7 @@ services:
     environment:
       EULA: "TRUE"
       GAMEMODE: $GAME_MODE
-      DIFFICULTY: normal
+      DIFFICULTY: $DIFFICULTY"
       LEVEL_NAME: "$WORLD_NAME"
       WHITE_LIST: "$ALLOW_LIST"
     ports:
@@ -125,7 +124,7 @@ services:
     restart: unless-stopped
 EOF
 
-if [ $BACKUPS = 0 ]; then
+if [ $BACKUPS = 1 ]; then
   cat >/root/minecraft-bedrock.yaml <<EOF
   backup:
     image: kaiede/minecraft-bedrock-backup
@@ -147,4 +146,4 @@ $DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --d
 motd_ssh
 customize
 msg_ok "Installed Minecraft Bedrock"
-msg_ok "Connect to $(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT"
+msg_ok "Connect to $WORLD_NAME at $(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT"
