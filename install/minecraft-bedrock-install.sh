@@ -63,7 +63,7 @@ if [ $exitstatus != 0 ]; then
     exit 1
 fi
 
-DIFFICULT=$(whiptail --title "Game mode" --radiolist "Choose a difficulty" 11 58 4 \
+DIFFICULTY=$(whiptail --title "Difficulty" --radiolist "Choose a difficulty" 11 58 4 \
   "peaceful" "" OFF \
   "easy" "" ON \
   "normal" "" OFF \
