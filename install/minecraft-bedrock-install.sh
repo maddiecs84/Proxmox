@@ -176,13 +176,14 @@ http {
 }
 EOF
 
+SERVER_ADDR="$(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT"
 cat >/root/dashboard.html <<EOF
 <!DOCTYPE html>
 <html>
   <body>
     <h1>Minecraft Bedrock - $WORLD_NAME</h1>
     <p>
-      Connect to $WORLD_NAME at $(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT
+      Connect to $WORLD_NAME at $SERVER_ADDR
     </p>
   </body>
 </html>
@@ -209,4 +210,4 @@ $DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --d
 motd_ssh
 customize
 msg_ok "Installed Minecraft Bedrock"
-msg_ok "Connect to $WORLD_NAME at $(ip -4 -o addr show eth0 | awk '{print $4}' | cut -d "/" -f 1):$PORT"
+msg_ok "Connect to $WORLD_NAME at $SERVER_ADDR"
