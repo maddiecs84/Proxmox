@@ -53,7 +53,7 @@ then
       WORLD_NAME="My World"
 fi
 
-GAME_MODE=$(whiptail --title "Game mode" --radiolist "Choose a game mode" 11 58 \
+GAME_MODE=$(whiptail --title "Game mode" --radiolist "Choose a game mode" 11 58 4 \
   "creative" "" ON \
   "survival" "" OFF \
   "adventure" "" OFF \
@@ -63,7 +63,7 @@ if [ $exitstatus != 0 ]; then
     exit 1
 fi
 
-DIFFICULT=$(whiptail --title "Game mode" --radiolist "Choose a difficulty" 11 58 \
+DIFFICULT=$(whiptail --title "Game mode" --radiolist "Choose a difficulty" 11 58 4 \
   "peaceful" "" OFF \
   "easy" "" ON \
   "normal" "" OFF \
