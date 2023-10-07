@@ -151,7 +151,7 @@ EOF
 fi
 
 ## Start configuring dashboard
-cat >/root/nginx.config <<EOF
+cat >/root/nginx.conf <<EOF
 events {
     worker_connections 1024;
 }
