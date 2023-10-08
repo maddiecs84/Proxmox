@@ -45,7 +45,6 @@ autostart=true
 stopasgroup=true
 user=bedrockconnect
 EOF
-rc-service supervisor stop
 rc-service supervisor start
 supervisorctl start BedrockConnect
 msg_ok "Installed Bedrock Connect $BEDROCK_CONNECT_LATEST_VERSION"
