@@ -19,7 +19,7 @@ EOF
 }
 header_info
 echo -e "Loading..."
-APP="minecraft-bedrock"
+APP="minecraft-bedrock-connect"
 var_disk="8"
 var_cpu="1"
 var_ram="512"
