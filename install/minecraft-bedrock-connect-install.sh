@@ -31,9 +31,14 @@ curl -sSL https://github.com/Pugmatt/BedrockConnect/releases/download/$BEDROCK_C
 adduser bedrockconnect --disabled-password
 mkdir -p /etc/supervisor/conf.d
 
+cat >/opt/bedrock-connect/servers.json <<EOF
+[
+]
+EOF
+
 cat >/etc/supervisor/conf.d/bedrock_connect.conf <<EOF
 [program:BedrockConnect]
-command=/usr/bin/java -jar /opt/bedrock-connect/bedrock_connect.jar nodb=true
+command=/usr/bin/java -jar /opt/bedrock-connect/bedrock_connect.jar nodb=true custom_servers=/opt/bedrock-connect/servers.json featured_servers=false
 directory=/opt/bedrock-connect/
 autorestart=true
 autostart=true
