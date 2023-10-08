@@ -54,6 +54,7 @@ then
 fi
 
 DEFAULT_SEED="5890866665536842607" # Cherry Blossom
+# Stronghold Below 22061
 LEVEL_SEED=$(whiptail --inputbox "Enter your level seed?" 11 58 "$DEFAULT_SEED" --title "Level Seed" 3>&1 1>&2 2>&3)
 exitstatus=$?
 if [ $exitstatus != 0 ]; then
@@ -221,6 +222,8 @@ motd_ssh
 customize
 
 $DOCKER_CONFIG/cli-plugins/docker-compose -f /root/minecraft-bedrock.yaml up --detach
+
+## docker exec -it minecraft_server bash send-command gamerule showcoordinates true
 
 msg_ok "Installed Minecraft Bedrock"
 msg_ok "Connect to $WORLD_NAME at $SERVER_ADDR"
