@@ -16,7 +16,6 @@ update_os
 msg_info "Installing Dependencies"
 $STD apk add curl
 $STD apk add openjdk17-jre
-$STD apk add supervisor
 msg_ok "Installed Dependencies"
 
 get_latest_release() {
@@ -28,25 +27,24 @@ msg_info "Installing Bedrock Connect $BEDROCK_CONNECT_LATEST_VERSION"
 mkdir -p /opt/bedrock-connect
 curl -sSL https://github.com/Pugmatt/BedrockConnect/releases/download/$BEDROCK_CONNECT_LATEST_VERSION/BedrockConnect-1.0-SNAPSHOT.jar -o /opt/bedrock-connect/bedrock_connect.jar
 
-adduser bedrockconnect --disabled-password
-mkdir -p /etc/supervisor/conf.d
+mkdir -p /etc/init.d
 
 cat >/opt/bedrock-connect/servers.json <<EOF
 [
 ]
 EOF
 
-cat >/etc/supervisor/conf.d/bedrock_connect.conf <<EOF
-[program:BedrockConnect]
-command=/usr/bin/java -jar /opt/bedrock-connect/bedrock_connect.jar nodb=true custom_servers=/opt/bedrock-connect/servers.json featured_servers=false
-directory=/opt/bedrock-connect/
-autorestart=true
-autostart=true
-stopasgroup=true
-user=bedrockconnect
-EOF
-rc-service supervisor start
-supervisorctl start BedrockConnect
+cat >/etc/init.d/bedrock_connect <<EOF
+#!/sbin/openrc-run
+description="Bedrock Connect"
+command=/usr/bin/java
+command_args=-jar /opt/bedrock-connect/bedrock_connect.jar nodb=true custom_servers=/opt/bedrock-connect/servers.json featured_servers=false
+command_background=true
+directory=/opt/tomcat
+pidfile="/run/${RC_SVCNAME}.pid"
+EOF 
+rc-service bedrock_connect start
+rc-update add bedrock_connect default
 msg_ok "Installed Bedrock Connect $BEDROCK_CONNECT_LATEST_VERSION"
 
 motd_ssh
