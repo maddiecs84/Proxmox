@@ -42,7 +42,7 @@ command_args=-jar /opt/bedrock-connect/bedrock_connect.jar nodb=true custom_serv
 command_background=true
 directory=/opt/tomcat
 pidfile="/run/\${RC_SVCNAME}.pid"
-EOF 
+EOF
 rc-service bedrock_connect start
 rc-update add bedrock_connect default
 msg_ok "Installed Bedrock Connect $BEDROCK_CONNECT_LATEST_VERSION"
