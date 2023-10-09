@@ -43,6 +43,7 @@ command_background=true
 directory=/opt/tomcat
 pidfile="/run/\${RC_SVCNAME}.pid"
 EOF
+chmod +x /etc/init.d/bedrock_connect
 rc-service bedrock_connect start
 rc-update add bedrock_connect default
 msg_ok "Installed Bedrock Connect $BEDROCK_CONNECT_LATEST_VERSION"
