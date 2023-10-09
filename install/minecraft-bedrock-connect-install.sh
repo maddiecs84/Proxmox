@@ -38,7 +38,7 @@ cat >/etc/init.d/bedrock_connect <<EOF
 #!/sbin/openrc-run
 description="Bedrock Connect"
 command=/usr/bin/java
-command_args=-jar /opt/bedrock-connect/bedrock_connect.jar nodb=true custom_servers=/opt/bedrock-connect/servers.json featured_servers=false
+command_args="-jar /opt/bedrock-connect/bedrock_connect.jar nodb=true custom_servers=/opt/bedrock-connect/servers.json featured_servers=false"
 command_background=true
 directory=/opt/bedrock-connect
 pidfile="/run/\${RC_SVCNAME}.pid"
