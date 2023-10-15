@@ -8,22 +8,22 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
 function header_info {
 clear
 cat <<"EOF"
-    ____                            
-   / __ \___ _   ____  ______  ____ 
-  / / / / _ \ | / / / / / __ `/ __ \
- / /_/ /  __/ |/ / /_/ / /_/ / / / /
-/_____/\___/|___/\__,_/\__,_/_/ /_/ 
-                                    
+  ______                           ___       __          _ 
+ /_  __/___ __________ ___  ____  /   | ____/ /___ ___  (_)___
+  / / / __ `/ ___/ __ `__ \/ __ \/ /| |/ __  / __ `__ \/ / __ \
+ / / / /_/ (__  ) / / / / / /_/ / ___ / /_/ / / / / / / / / / /
+/_/  \__,_/____/_/ /_/ /_/\____/_/  |_\__,_/_/ /_/ /_/_/_/ /_/
+
 EOF
 }
 header_info
 echo -e "Loading..."
-APP="Devuan"
+APP="TasmoAdmin"
 var_disk="2"
 var_cpu="1"
 var_ram="512"
-var_os="devuan"
-var_version="4.0"
+var_os="debian"
+var_version="12"
 variables
 color
 catch_errors
@@ -65,3 +65,5 @@ build_container
 description
 
 msg_ok "Completed Successfully!\n"
+echo -e "${APP} should be reachable by going to the following URL.
+         ${BL}http://${IP}:9999${CL} \n"

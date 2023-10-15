@@ -1,8 +1,41 @@
-<a href="https://tteck.github.io/Proxmox/"><img src="https://github-readme-stats-git-masterrstaa-rickstaa.vercel.app/api?username=tteck&theme=blue-green" height="130"/></a>
+<!-- <p align="center"><a href="https://helper-scripts" rel="noreferrer" target="_blank"><img src="https://github-readme-stats.vercel.app/api?username=tteck&custom_title=Proxmox&nbsp;VE&nbsp;Helper&nbsp;Scripts&theme=transparent&ring_color=00b100&hide=issues,contribs&hide_border=true&card_width=550px&include_all_commits=true&rank_icon=percentile&show_icons=true&show=prs_merged,prs_merged_percentage"></a></p> -->
+
 # Change Log
 **All notable changes to this project will be documented in this file.**<br>
 
 - All LXC instances created using this repository come pre-installed with Midnight Commander, which is a command-line tool (`mc`) that offers a user-friendly file and directory management interface for the terminal environment.
+
+## 2023-10-15
+
+### Changed
+
+- **TasmoAdmin LXC**
+  - NEW Script
+
+## 2023-10-14
+
+### Changed
+
+- **Sonarr LXC**
+  - Include an option to install v4 (experimental)
+
+## 2023-10-11
+
+### Changed
+
+- **Proxmox VE CPU Scaling Governor**
+  - A full code overhaul.
+  - Include an option to configure a crontab for ensuring that the CPU Scaling Governor configuration persists across reboots.
+
+## 2023-10-08
+
+### Changed
+
+- **Proxmox VE LXC Updater**
+  - Now displays which containers require a reboot.
+- **File Browser**
+  - Uninstall by re-executing the script
+  - Option to use No Authentication
 
 ## 2023-10-05
 
