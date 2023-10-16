@@ -128,14 +128,11 @@ EOF
 cat /etc/barman.conf.template | envsubst > /etc/barman.conf
 cat /etc/barman/barman.d/pg.conf.template | envsubst > /etc/barman/barman.d/${DB_HOST}.conf
 
-echo "${DB_HOST}:${DB_PORT}:*:${DB_SUPERUSER}:${DB_SUPERUSER_PASSWORD}" > /home/barman/.pgpass
-echo "${DB_HOST}:${DB_PORT}:*:${DB_REPLICATION_USER}:${DB_REPLICATION_PASSWORD}" >> /home/barman/.pgpass
-chown barman:barman /home/barman/.pgpass
-chmod 600 /home/barman/.pgpass
-
-echo "Checking/Creating replication slot"
-# barman replication-status ${DB_HOST} --minimal --target=wal-streamer | grep barman || barman receive-wal --create-slot ${DB_HOST}
-# barman replication-status ${DB_HOST} --minimal --target=wal-streamer | grep barman || barman receive-wal --reset ${DB_HOST}
+barman_home=${echo ~barman}
+echo "${DB_HOST}:${DB_PORT}:*:${DB_SUPERUSER}:${DB_SUPERUSER_PASSWORD}" > $barman_home/.pgpass
+echo "${DB_HOST}:${DB_PORT}:*:${DB_REPLICATION_USER}:${DB_REPLICATION_PASSWORD}" >> $barman_home/.pgpass
+chown barman:barman $barman_home/.pgpass
+chmod 600 $barman_home/.pgpass
 
 motd_ssh
 customize
