@@ -82,7 +82,7 @@ install -d -m 0755 -o barman -g barman ${BARMAN_LOG_DIR}
 
 msg_info "Generating Barman configurations"
 
-cat | envsubst >/etc/barman.conf <<EOF
+cat >/etc/barman.conf.template <<EOF
 ; Commented lines show the default values
 
 [barman]
@@ -114,7 +114,7 @@ log_file = ""
 log_level = ${BARMAN_LOG_LEVEL}
 EOF
 
-cat | envsubst >/etc/barman/barman.d/pg.conf <<EOF
+cat >/etc/barman/barman.d/pg.conf.template <<EOF
 [${DB_HOST}]
 active = true
 description =  "PostgreSQL Database (Streaming-Only)"
@@ -124,6 +124,9 @@ backup_method = ${DB_BACKUP_METHOD}
 streaming_archiver = on
 slot_name = ${DB_SLOT_NAME}
 EOF
+
+cat /etc/barman.conf.template | envsubst > /etc/barman.conf
+cat /etc/barman/barman.d/pg.conf.template | envsubst > /etc/barman/barman.d/${DB_HOST}.conf
 
 echo "${DB_HOST}:${DB_PORT}:*:${DB_SUPERUSER}:${DB_SUPERUSER_PASSWORD}" > /home/barman/.pgpass
 echo "${DB_HOST}:${DB_PORT}:*:${DB_REPLICATION_USER}:${DB_REPLICATION_PASSWORD}" >> /home/barman/.pgpass
