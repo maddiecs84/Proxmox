@@ -57,15 +57,14 @@ su - barman bash -c 'echo -e "Host *\n\tCheckHostIP no" > ~/.ssh/config'
 BARMAN_CRON_SRC=/private/cron.d
 BARMAN_DATA_DIR=/var/lib/barman
 BARMAN_LOG_DIR=/var/log/barman
-BARMAN_SSH_KEY_DIR=/private/ssh
 BARMAN_CRON_SCHEDULE="* * * * *"
 BARMAN_BACKUP_SCHEDULE="0 4 * * *"
 BARMAN_LOG_LEVEL=INFO
 DB_HOST=pg
 DB_PORT=5432
-DB_SUPERUSER=postgres
-DB_SUPERUSER_PASSWORD=postgres
-DB_SUPERUSER_DATABASE=postgres
+DB_USER=barman
+DB_USER_PASSWORD=barman
+DB_USER_DATABASE=postgres
 DB_REPLICATION_USER=standby
 DB_REPLICATION_PASSWORD=standby
 DB_SLOT_NAME=barman
@@ -74,6 +73,44 @@ BARMAN_EXPORTER_SCHEDULE="*/5 * * * *"
 BARMAN_EXPORTER_LISTEN_ADDRESS="0.0.0.0"
 BARMAN_EXPORTER_LISTEN_PORT=9780
 BARMAN_EXPORTER_CACHE_TIME=3600
+
+whiptail --title "Barman" --msgbox "Configure Barman" 11 58
+
+DB_HOST=$(whiptail --inputbox "Postgres host address?" 11 58 "" --title "Postgres host address" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+
+DB_USER_DATABASE=$(whiptail --inputbox "Postgres db?" 11 58 "postgres" --title "Database" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+
+DB_USER=$(whiptail --inputbox "Connection user?" 11 58 "barman" --title "Username for the connection user" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+
+DB_USER_PASSWORD=$(whiptail --passwordbox "Connection password?" 11 58 "barman123" --title "Password for the connection user" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+
+DB_REPLICATION_USER=$(whiptail --inputbox "Replication user" 11 58 "barman" --title "Replication user to use for streaming" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
+
+DB_REPLICATION_PASSWORD=$(whiptail --passwordbox "Replication password" 11 58 "barman123" --title "Replication user password to use for streaming" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus != 0 ]; then
+    exit 1
+fi
 
 msg_info "Setting ownership/permissions on ${BARMAN_DATA_DIR} and ${BARMAN_LOG_DIR}"
 
@@ -118,7 +155,7 @@ cat >/etc/barman/barman.d/pg.conf.template <<EOF
 [${DB_HOST}]
 active = true
 description =  "PostgreSQL Database (Streaming-Only)"
-conninfo = host=${DB_HOST} user=${DB_SUPERUSER} dbname=${DB_SUPERUSER_DATABASE} port=${DB_PORT}
+conninfo = host=${DB_HOST} user=${DB_USER} dbname=${DB_USER_DATABASE} port=${DB_PORT}
 streaming_conninfo = host=${DB_HOST} user=${DB_REPLICATION_USER} port=${DB_PORT}
 backup_method = ${DB_BACKUP_METHOD}
 streaming_archiver = on
@@ -128,11 +165,18 @@ EOF
 cat /etc/barman.conf.template | envsubst > /etc/barman.conf
 cat /etc/barman/barman.d/pg.conf.template | envsubst > /etc/barman/barman.d/${DB_HOST}.conf
 
-barman_home=$(echo ~barman)
-echo "${DB_HOST}:${DB_PORT}:*:${DB_SUPERUSER}:${DB_SUPERUSER_PASSWORD}" > $barman_home/.pgpass
-echo "${DB_HOST}:${DB_PORT}:*:${DB_REPLICATION_USER}:${DB_REPLICATION_PASSWORD}" >> $barman_home/.pgpass
-chown barman:barman $barman_home/.pgpass
-chmod 600 $barman_home/.pgpass
+echo "${DB_HOST}:${DB_PORT}:*:${DB_USER}:${DB_USER_PASSWORD}" > ~barman/.pgpass
+echo "${DB_HOST}:${DB_PORT}:*:${DB_REPLICATION_USER}:${DB_REPLICATION_PASSWORD}" >> ~barman/.pgpass
+chown barman:barman ~barman/.pgpass
+chmod 600 ~barman/.pgpass
+
+ssh-keygen -b 2048 -t rsa -f ~barman/.ssh/id_rsa -q -N ""
+chmod 700 ~barman/.ssh
+chown barman:barman -R ~barman/.ssh
+chmod 600 ~barman/.ssh/id_rsa
+
+msg_info "Add Barman public key to postgres server"
+msg_info $(cat ~barman/.ssh/id_rsa.pub)
 
 motd_ssh
 customize
