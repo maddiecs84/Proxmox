@@ -128,7 +128,7 @@ EOF
 cat /etc/barman.conf.template | envsubst > /etc/barman.conf
 cat /etc/barman/barman.d/pg.conf.template | envsubst > /etc/barman/barman.d/${DB_HOST}.conf
 
-barman_home=${echo ~barman}
+barman_home=$(echo ~barman)
 echo "${DB_HOST}:${DB_PORT}:*:${DB_SUPERUSER}:${DB_SUPERUSER_PASSWORD}" > $barman_home/.pgpass
 echo "${DB_HOST}:${DB_PORT}:*:${DB_REPLICATION_USER}:${DB_REPLICATION_PASSWORD}" >> $barman_home/.pgpass
 chown barman:barman $barman_home/.pgpass
