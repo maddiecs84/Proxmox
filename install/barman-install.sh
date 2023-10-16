@@ -50,7 +50,6 @@ $STD bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg m
 	&& sed -i 's/\(.*pam_loginuid.so\)/#\1/' /etc/pam.d/cron \
     && mkdir -p /etc/barman/barman.d
 
-useradd --system --shell /bin/bash barman
 install -d -m 0700 -o barman -g barman ~barman/.ssh
 su - barman bash -c 'echo -e "Host *\n\tCheckHostIP no" > ~/.ssh/config'
 
